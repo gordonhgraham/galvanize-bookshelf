@@ -36,10 +36,12 @@ router.get(`/books/:id`, (req, res, next) => {
 router.post(`/books`, (req, res, next) => {
   const newBook = req.body
   knex('books')
-    .insert(humps.decamelizeKeys(newBook))
-    .returning('id')
-    .then(id => {
-      // res.json(knex.raw('select * from books where ID=id'));
+    .insert(humps.decamelizeKeys(newBook), 'id')
+    .then(num => {
+      const id = num[0];
+      knex(`books`).where('id', id).first().then((data) => {
+        res.json(humps.camelizeKeys(data));
+      })
     })
     .catch((err) => {
       next(err);
