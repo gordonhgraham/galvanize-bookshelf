@@ -48,19 +48,21 @@ router.post(`/books`, (req, res, next) => {
     });
 });
 
-// update one book, patch
-router.put(`/books/:id`, (req, res) => {
+// update one book
+router.patch(`/books/:id`, (req, res) => {
   const id = req.params.id;
   const newBook = req.body;
   knex(`books`)
     .where(`id`, id)
-    .update(humps.decamelizedKeys(newBook), 'id')
-    .then(num => {
-      const id = num[0];
+    .update(humps.decamelizeKeys(newBook))
+    .then(() => {
       knex(`books`).where('id', id).first().then((data) => {
         res.json(humps.camelizeKeys(data));
       });
     });
 });
+
+// delete one book
+// router.delete()
 
 module.exports = router;
