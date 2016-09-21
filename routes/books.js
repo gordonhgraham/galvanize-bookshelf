@@ -3,6 +3,7 @@
 const express = require('express');
 const knex = require('../knex');
 const humps = require('humps');
+var bodyParser = require('body-parser')
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -29,6 +30,20 @@ router.get(`/books/:id`, (req, res, next) => {
     .catch((err) => {
       next(err);
     })
+});
+
+// add one book
+router.post(`/books`, (req, res, next) => {
+  const newBook = req.body
+  knex('books')
+    .insert(humps.decamelizeKeys(newBook))
+    .returning('id')
+    .then(id => {
+      // res.json(knex.raw('select * from books where ID=id'));
+    })
+    .catch((err) => {
+      next(err);
+    });
 });
 
 module.exports = router;
