@@ -2,7 +2,7 @@
 
 const express = require('express');
 const humps = require('humps');
-const knex = require('knex');
+const knex = require('../knex');
 
 
 // eslint-disable-next-line new-cap
@@ -21,9 +21,7 @@ router.post(`/users`, (req, res, next) => {
         }, `*`);
     })
     .then(data => {
-      console.log(`data:`, data);
       const newUser = data[0];
-      console.log(`newUser:`, newUser);
       delete newUser.hashed_password;
       res.json(humps.camelizeKeys(newUser));
     })
