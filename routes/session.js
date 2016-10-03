@@ -38,19 +38,20 @@ router.post(`/session`, (req, res, next) => {
         } else {
           res.type(`text/plain`)
           res.status(400)
-          res.send(`Incorrect email or password.`)
+          res.send(`Bad email or password`)
         }
       } else {
         res.type(`text/plain`)
         res.status(400)
-        res.send(`Incorrect email or password.`)
+        res.send(`Bad email or password`)
       }
     })
 });
 
 // delete session info
 router.delete(`/session`, (req, res, next) => {
-
+  req.session = null;
+  res.send(true);
 });
 
 module.exports = router;
