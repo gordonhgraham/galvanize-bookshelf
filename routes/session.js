@@ -22,19 +22,12 @@ router.post(`/session`, (req, res, next) => {
   knex(`users`)
     .where(`email`, login.email)
     .then(user => {
-        if (user.length) {
+      if (user.length) {
         const credentials = bcrypt.compareSync(login.password, user[0].hashed_password);
         if (credentials) {
-          const userInfo = {
-            id: user[0].id,
-            id: user[0].id,
-            email: user[0].email,
-            firstName: user[0].first_name,
-            lastName: user[0].last_name,
-          }
           delete user[0].hashed_password;
-            req.session.userInfo = user[0];
-            res.json(userInfo);
+          req.session.userInfo = user[0];
+          res.json(user[0]);
         } else {
           res.type(`text/plain`)
           res.status(400)
