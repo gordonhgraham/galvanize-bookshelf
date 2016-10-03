@@ -5,17 +5,21 @@ const knex = require(`../knex`);
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
+const cookieSession = require('cookie-session')
 
 router.get(`/favorites`, (req, res) => {
-  if (req.session) {
-    res.type(`json`);
-    res.status(200).send('test')
+  console.log(req.session.userInfo);
+  if (req.session.userInfo) {
+    const favorites = knex(`favorites`)
+      .where(`user_id`, req.session.userInfo.id)
+      .then(data => {
+        res.send(data);
   } else {
     res.status(401).send(`Unauthorized`);
   }
 });
 
-router.get(`/favorites/check?bookId=`, (req, res) => {
+router.get(`/favorites/:id`, (req, res) => {
   if (req.session.userInfo) {
 
   } else {
