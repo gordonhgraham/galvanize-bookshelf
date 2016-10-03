@@ -7,38 +7,50 @@ var bcrypt = require(`bcrypt`);
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-// get session info
 router.get(`/session`, (req, res, next) => {
   res.type(`json`);
   if (req.session.userInfo) {
-    res.send(req.session.userInfo);
+    res.send(`true`);
   } else {
     res.status(200).end('false');
   }
 });
 
-//post session info
 router.post(`/session`, (req, res, next) => {
   res.type(`json`);
-  const user = req.body;
-  const password = bcrypt.hashSync(req.body.password, 12);
+  const login = req.body;
   knex(`users`)
-    .insert({
-      first_name: user.firstName,
-      last_name: user.lastName,
-      email: user.email,
-      hashed_password: password
-    }, `*`)
-    .then(data => {
-      req.session.userInfo = data[0];
-      delete data.hashed_password;
-      res.send(data[0]);
-    });
+    .where(`email`, login.email)
+    .then(user => {
+        if (user.length) {
+        const credentials = bcrypt.compareSync(login.password, user[0].hashed_password);
+        if (credentials) {
+          const userInfo = {
+            id: user[0].id,
+            id: user[0].id,
+            email: user[0].email,
+            firstName: user[0].first_name,
+            lastName: user[0].last_name,
+          }
+          delete user[0].hashed_password;
+            req.session.userInfo = user[0];
+            res.json(userInfo);
+        } else {
+          res.type(`text/plain`)
+          res.status(400)
+          res.send(`Incorrect email or password.`)
+        }
+      } else {
+        res.type(`text/plain`)
+        res.status(400)
+        res.send(`Incorrect email or password.`)
+      }
+    })
 });
 
 // delete session info
-// router.delete(`/session`, (req, res, next) => {
-//
-// });
+router.delete(`/session`, (req, res, next) => {
+
+});
 
 module.exports = router;
