@@ -11,9 +11,7 @@ const bcrypt = require(`bcrypt`);
 
 router.post(`/users`, (req, res, next) => {
   const newUser = req.body;
-  console.log(newUser.password);
   const hashed_password = bcrypt.hashSync(newUser.password, 12);
-  console.log(hashed_password);
   knex(`users`)
     .insert({
       first_name: newUser.firstName,
