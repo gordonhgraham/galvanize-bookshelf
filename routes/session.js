@@ -8,9 +8,9 @@ var bcrypt = require(`bcrypt`);
 const router = express.Router();
 
 router.get(`/session`, (req, res, next) => {
-  res.type(`json`);
+  // res.type(`json`);
   if (req.session.userInfo) {
-    res.send(`true`);
+    res.json(`true`);
   } else {
     res.status(200).end('false');
   }
