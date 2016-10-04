@@ -7,23 +7,24 @@ const knex = require('../knex');
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
-const bcrypt = require(`bcrypt-as-promised`);
+const bcrypt = require(`bcrypt`);
 
 router.post(`/users`, (req, res, next) => {
-  bcrypt.hash(req.body.password, 12)
-    .then((hashed_password) => {
-      return knex(`users`)
-        .insert({
-          first_name: req.body.firstName,
-          last_name: req.body.lastName,
-          email: req.body.email,
-          hashed_password: hashed_password
-        }, `*`);
-    })
+  const newUser = req.body;
+  console.log(newUser.password);
+  const hashed_password = bcrypt.hashSync(newUser.password, 12);
+  console.log(hashed_password);
+  knex(`users`)
+    .insert({
+      first_name: newUser.firstName,
+      last_name: newUser.lastName,
+      email: newUser.email,
+      hashed_password: hashed_password
+    }, `*`)
     .then(data => {
-      const newUser = data[0];
-      delete newUser.hashed_password;
-      res.json(humps.camelizeKeys(newUser));
+      const user = data[0];
+      delete user.hashed_password;
+      res.json(humps.camelizeKeys(user));
     })
     .catch((err) => {
       next(err);
