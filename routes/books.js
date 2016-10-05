@@ -53,12 +53,41 @@ router.post(`/books`, (req, res, next) => {
     })
 })
 
-router.put(`books/:id`, (req, res, next) => {
+router.patch(`/books/:id`, (req, res, next) => {
   const bookId = req.params.id
   const submittedUpdate = decamelizeKeys(req.body)
 
-  knex
+  knex(`books`)
+    .where(`id`, bookId)
+    .first()
+    .update(submittedUpdate, `*`)
+    .then(data => {
+      const updatedBook = camelizeKeys(data[0])
 
+      res.send(updatedBook)
+    })
+    .catch(err => {
+      next(err)
+    })
+})
+
+router.delete(`/books/:id`, (req, res, next) => {
+  const bookId = req.params.id
+
+  knex(`books`)
+    .where(`id`, bookId)
+    .first()
+    .del()
+    .returning(`*`)
+    .then(book => {
+      const deletedBook = camelizeKeys(book[0])
+
+      delete deletedBook.id
+      res.send(deletedBook)
+    })
+    .catch(err => {
+      next(err)
+    })
 })
 
 module.exports = router
