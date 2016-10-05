@@ -4,15 +4,14 @@ const express = require('express');
 const knex = require(`../knex`);
 const bodyParser = require(`body-parser`);
 var bcrypt = require(`bcrypt`);
-// eslint-disable-next-line new-cap
+
 const router = express.Router();
 
 router.get(`/session`, (req, res, next) => {
-  // res.type(`json`);
-  if (req.session.userInfo) {
-    res.json(`true`);
+  if (req.session.userId) {
+    res.send(true);
   } else {
-    res.status(200).end('false');
+    res.send(false)
   }
 });
 
