@@ -3,7 +3,8 @@
 const express = require('express');
 const knex = require(`../knex`);
 const bodyParser = require(`body-parser`);
-var bcrypt = require(`bcrypt`);
+const bcrypt = require(`bcrypt`);
+const cookieSession = require(`cookie-session`);
 
 const router = express.Router();
 
