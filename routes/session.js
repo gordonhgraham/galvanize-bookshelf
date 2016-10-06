@@ -1,13 +1,12 @@
 'use strict'
 
+/* eslint-disable no-sync */
+
 const express = require(`express`)
 const knex = require(`../knex`)
 const cookieSession = require(`cookie-session`)
-const bcrypt = require(`bcrypt-as-promised`)
-const {
-  camelizeKeys,
-  decamelizeKeys,
-} = require(`humps`)
+const bcrypt = require(`bcrypt`)
+const { camelizeKeys, decamelizeKeys, } = require(`humps`)
 
 // eslint-disable-next-line new-cap
 const router = express.Router()
@@ -20,30 +19,25 @@ router.get(`/session`, (req, res) => {
   }
 })
 
-router.post(`/session`, (req, res, next) => {
+router.post(`/session`, (req, res) => {
   const login = req.body
 
   knex(`users`)
     .where(`email`, login.email)
     .then(user => {
-      console.log(user.length);
       if (user.length) {
         const userInfo = user[0]
-        bcrypt.compare(login.password, userInfo.hashed_password)
-          .then(data => {
-            console.log(`this is the data`, data);
-            if (data) {
-              req.session.user = userInfo
-              delete userInfo.hashed_password
-              res.send(camelizeKeys(userInfo))
-            } else {
-              res.type(`text/plain`)
-              res.status(400)
-              res.send(`Bad email or password`)
-            }
-          })
+
+        if (bcrypt.compareSync(login.password, userInfo.hashed_password)) {
+          req.session.user = userInfo
+          delete userInfo.hashed_password
+          res.send(camelizeKeys(userInfo))
+        } else {
+          res.type(`text/plain`)
+          res.status(400)
+          res.send(`Bad email or password`)
+        }
       } else {
-        console.log(`the email was no good`);
         res.type(`text/plain`)
         res.status(400)
         res.send(`Bad email or password`)
@@ -51,7 +45,7 @@ router.post(`/session`, (req, res, next) => {
     })
 })
 
-router.delete(`/session`, (req, res, next) => {
+router.delete(`/session`, (req, res) => {
   req.session = null
   res.send(true)
 })
