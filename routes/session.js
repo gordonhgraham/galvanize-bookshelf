@@ -25,21 +25,33 @@ router.post(`/session`, (req, res, next) => {
 
   knex(`users`)
     .where(`email`, login.email)
-    .first()
     .then(user => {
-      const credentials = bcrypt.compare(login.password, user.hashed_password)
-
-      if (credentials) {
-        req.session.user = user
-        delete user.hashed_password
-        res.send(camelizeKeys(user))
+      console.log(user.length);
+      if (user.length) {
+        const userInfo = user[0]
+        bcrypt.compare(login.password, userInfo.hashed_password)
+          .then(data => {
+            console.log(`this is the data`, data);
+            if (data) {
+              req.session.user = userInfo
+              delete userInfo.hashed_password
+              res.send(camelizeKeys(userInfo))
+            } else {
+              res.type(`text/plain`)
+              res.status(400)
+              res.send(`Bad email or password`)
+            }
+          })
       } else {
+        console.log(`the email was no good`);
+        res.type(`text/plain`)
+        res.status(400)
         res.send(`Bad email or password`)
       }
     })
 })
 
-router.delete(`/sessioin`, (req, res, next) => {
+router.delete(`/session`, (req, res, next) => {
   req.session = null
   res.send(true)
 })
