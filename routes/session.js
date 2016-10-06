@@ -23,14 +23,13 @@ router.get(`/session`, (req, res) => {
 router.post(`/session`, (req, res, next) => {
   const login = req.body
 
-  // check username and hashed password with db
   knex(`users`)
     .where(`email`, login.email)
     .first()
     .then(user => {
       const credentials = bcrypt.compare(login.password, user.hashed_password)
 
-      if (user && credentials) {
+      if (credentials) {
         req.session.user = user
         delete user.hashed_password
         res.send(camelizeKeys(user))
@@ -41,7 +40,7 @@ router.post(`/session`, (req, res, next) => {
 })
 
 router.delete(`/sessioin`, (req, res, next) => {
-  req.session.user = null
+  req.session = null
   res.send(true)
 })
 
