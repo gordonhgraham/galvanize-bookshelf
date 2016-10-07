@@ -23,7 +23,8 @@ router.get(`/favorites`, (req, res, next) => {
       })
       .catch(err => { next(err) })
   } else {
-    next(err => { res.status(401).send(`Unauthorized`, err) })
+    res.type(`text/plain`)
+    res.status(401).send(`Unauthorized`)
   }
 })
 
@@ -42,15 +43,39 @@ router.get(`/favorites/:id`, (req, res, next) => {
         }
       })
       .catch(err => { next(err) })
+  } else {
+    res.type(`text/plain`)
+    res.status(401).send(`Unauthorized`)
   }
 })
 
-// router.post(`/favorites`, (req, res, next) => {
-//
-// })
-//
+router.post(`/favorites`, (req, res, next) => {
+  if (req.session.user) {
+    const newFavorite = req.body
+    knex(`favorites`)
+      .insert({
+        user_id: req.session.user.id,
+        book_id: newFavorite.bookId,
+      }, `*`)
+      .then(data => {
+        const favorite = camelizeKeys(data[0])
+
+        res.send(favorite)
+      })
+      .catch(err => { next(err) })
+  } else {
+    res.type(`text/plain`)
+    res.status(401).send(`Unauthorized`)
+  }
+})
+
 // router.delete(`/favorites`, (req, res, next) => {
+//   if (req.session.user) {
 //
+//   } else {
+//     res.type(`text/plain`)
+//     res.status(401).send(`Unauthorized`)
+//   }
 // })
 
 module.exports = router
