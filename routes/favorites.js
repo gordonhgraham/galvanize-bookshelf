@@ -5,7 +5,7 @@ const knex = require(`../knex`)
 const cookieSession = require(`cookie-session`)
 const { camelizeKeys, decamelizeKeys, } = require(`humps`)
 
-// eslint-disable-next-line new-cap
+/* eslint-disable new-cap, camelcase */
 const router = express.Router()
 
 router.get(`/favorites`, (req, res, next) => {
@@ -52,6 +52,7 @@ router.get(`/favorites/:id`, (req, res, next) => {
 router.post(`/favorites`, (req, res, next) => {
   if (req.session.user) {
     const newFavorite = req.body
+
     knex(`favorites`)
       .insert({
         user_id: req.session.user.id,
@@ -69,13 +70,23 @@ router.post(`/favorites`, (req, res, next) => {
   }
 })
 
-// router.delete(`/favorites`, (req, res, next) => {
-//   if (req.session.user) {
-//
-//   } else {
-//     res.type(`text/plain`)
-//     res.status(401).send(`Unauthorized`)
-//   }
-// })
+router.delete(`/favorites`, (req, res, next) => {
+  if (req.session.user) {
+    knex(`favorites`)
+      .where(`user_id`, req.session.user.id)
+      .del()
+      .returning(`*`)
+      .then(data => {
+        const deleted = camelizeKeys(data[0])
+
+        delete deleted.id
+        res.send(deleted)
+      })
+      .catch(err => { next(err) })
+  } else {
+    res.type(`text/plain`)
+    res.status(401).send(`Unauthorized`)
+  }
+})
 
 module.exports = router
