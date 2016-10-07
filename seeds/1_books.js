@@ -1,8 +1,12 @@
+'use strict'
+
+/* eslint-disable camelcase, max-len, quotes, comma-dangle, no-unused-vars */
+
 exports.seed = function(knex, Promise) {
   // Deletes ALL existing entries
   return knex('books').del()
     .then(() => {
-      return knex(`books`).insert([{
+      return knex('books').insert([{
         id: 1,
         title: 'JavaScript, The Good Parts',
         author: 'Douglas Crockford',
@@ -74,6 +78,6 @@ exports.seed = function(knex, Promise) {
         cover_url: 'http://akamaicovers.oreilly.com/images/0636920032977/lrg.jpg',
         created_at: new Date('2016-06-26 14:26:16 UTC'),
         updated_at: new Date('2016-06-26 14:26:16 UTC')
-      }]);
-    });
-};
+      }])
+    })
+}

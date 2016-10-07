@@ -22,6 +22,10 @@
   "homepage": "",
   "dependencies": {
     "bcrypt": "^0.8.7",
+<<<<<<< HEAD
+=======
+    "bcrypt-as-promised": "^1.1.0",
+>>>>>>> bnb-part4
     "body-parser": "^1.15.2",
     "boom": "^3.2.2",
     "cookie-parser": "^1.4.3",
