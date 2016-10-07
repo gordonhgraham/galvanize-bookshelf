@@ -27,10 +27,24 @@ router.get(`/favorites`, (req, res, next) => {
   }
 })
 
-// router.get(`/favorites/check?bookId=2`, (req, res, next) => {
-//  req.query.bookId
-// })
-//
+router.get(`/favorites/:id`, (req, res, next) => {
+  if (req.session.user) {
+    const bookId = req.query.bookId
+
+    knex(`favorites`)
+      .where(`user_id`, req.session.user.id)
+      .where(`book_id`, bookId)
+      .then(data => {
+        if (data.length) {
+          res.status(200).send(true)
+        } else {
+          res.status(200).send(false)
+        }
+      })
+      .catch(err => { next(err) })
+  }
+})
+
 // router.post(`/favorites`, (req, res, next) => {
 //
 // })
