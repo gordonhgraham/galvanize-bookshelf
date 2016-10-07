@@ -23,8 +23,8 @@ router.post(`/users`, (req, res, next) => {
         }, `*`)
         .then(user => {
           const addedUser = camelizeKeys(user[0])
-          req.session.user = addedUser
 
+          req.session.user = addedUser
           delete addedUser.hashedPassword
           res.send(addedUser)
         })
